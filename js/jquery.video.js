@@ -1,4 +1,4 @@
-﻿(function($) {
+﻿var VideoPlayer = function() {
 
 var defaults = {
 	width: 720,    // Number型，播放器宽度。
@@ -10,7 +10,7 @@ var defaults = {
 	no_support: "您的浏览器不支持html5，无法使用该插件功能！"    // String型，浏览器不支持video标签时的提示，可使用html标签。
 };
 
-function Html5Video(options) {
+function VideoPlayer(options) {
 	var options = $.extend(defaults, options);
 	var _fullScreen = false;
 	var _videos = null;
@@ -104,6 +104,7 @@ function Html5Video(options) {
 			+ '</div>';
 		container.html(tpl);
 		_videos = container.find("video");
+		var video = _videos[0];
 		if (options.loop) {
 			_videos.attr("loop", "loop");
 		}
@@ -128,35 +129,35 @@ function Html5Video(options) {
 
 		// 播放进度
 		$(".video_range .v_range").on("change", function(e) {
-			_videos[0].currentTime = $(this).val();
+			video.currentTime = $(this).val();
 		});
 		// 音量
 		$(".v_volume .v_range").on("change", function(e) {
 			$(".volume_percentage").text($(this).val() + "%");
-			_videos[0].volume = Number($(this).val()) / 100;
+			video.volume = Number($(this).val()) / 100;
 		});
 		// Play按钮
 		$(".iconfont.play").on("click", function(e) {
 			$(this).hide().siblings(".play").show();
-			if (_videos[0].paused) {
+			if (video.paused) {
 				$(".v_bigplaybtn").hide();
-				_videos[0].play();
+				video.play();
 			} else {
 				$(".v_bigplaybtn").show();
-				_videos[0].pause();
+				video.pause();
 			}
 		});
 
 		// video事件绑定
 		_videos.on({
 			"loadedmetadata": function() {
-				var _t1 = _videos[0].duration; // 视频总时间
+				var _t1 = video.duration; // 视频总时间
 				var _t2 = Math.floor(_t1 / 60) + ":" + Math.floor(_t1 - Math.floor(_t1 / 60) * 60);
 				$(".v_play b em:eq(1)").html(_t2);
 				$(".video_range .v_progress, .video_range .v_range").attr("max", Math.floor(_t1));
 			},
 			"timeupdate": function() {
-				var _t1 = _videos[0].currentTime; // 当前播放时间
+				var _t1 = video.currentTime; // 当前播放时间
 				var _t2 = Math.floor(_t1 / 60) + ":" + Math.floor(_t1 - Math.floor(_t1 / 60) * 60);
 				$(".v_play b em:eq(0)").html(_t2);
 				$(".video_range .v_progress, .video_range .v_range").attr("value", Math.floor(_t1));
@@ -240,20 +241,20 @@ function Html5Video(options) {
 
 		// 播放速率
 		$(".v_bitrate .v_range").on("change", function(e) {
-			_videos[0].playbackRate = $(this).val() / 2;
-			if (_videos[0].playbackRate == 0) {
+			video.playbackRate = $(this).val() / 2;
+			if (video.playbackRate == 0) {
 				$(".c_bitrate em").text("0倍");
 			}
-			if (_videos[0].playbackRate == 0.5) {
+			if (video.playbackRate == 0.5) {
 				$(".c_bitrate em").text("0.5倍");
 			}
-			if (_videos[0].playbackRate == 1) {
+			if (video.playbackRate == 1) {
 				$(".c_bitrate em").text("1倍");
 			}
-			if (_videos[0].playbackRate == 1.5) {
+			if (video.playbackRate == 1.5) {
 				$(".c_bitrate em").text("1.5倍");
 			}
-			if (_videos[0].playbackRate == 2) {
+			if (video.playbackRate == 2) {
 				$(".c_bitrate em").text("2倍");
 			}
 		});
@@ -424,7 +425,11 @@ function Html5Video(options) {
 	}
 }
 
+	return VideoPlayer;
+}();
+
+(function($) {
 	$.fn.extend({
-		html5video: Html5Video
+		html5video: VideoPlayer
 	});
 })(jQuery);
